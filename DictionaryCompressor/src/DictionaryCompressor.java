@@ -5,11 +5,10 @@ import java.util.stream.Collectors;
 
 public class DictionaryCompressor 
 {
-	static ArrayList<String> newSubstrings = new ArrayList<String>();		//Substrings that dont exist within input.
 	static ArrayList<String> tempNewSubstrings = new ArrayList<String>();		//Substrings that dont exist within input.
 	static ArrayList<String> uniqueSubstrings = new ArrayList<String>();	//Substrings that exist once within input.
-	static ArrayList<String> tempUniqueSubstrings = new ArrayList<String>();	//Substrings that exist once within input.
 	static ArrayList<String> repeatedSubstrings = new ArrayList<String>();  //Substrings that repeat within input.
+	static ArrayList<String> dictionary = new ArrayList<String>();
 	//static ArrayList<Integer> lengthOfSubstrings = new ArrayList<Integer>();//Lengths of repeated substrings.
 	
 	
@@ -18,23 +17,32 @@ public class DictionaryCompressor
 	static String subString, subStringRemoved, input, inputSaver, bigStringSaver, smallStringSaver;
 	
 	static int length = 0;
-    static int base = 36;
+    static int base = 2;
     static int saved = 0;
+    static int size = 3;
     
     static boolean done = false;
     
 	public static void main(String[] args)
 	{
-        input = "jfp4qp893gegh9pw85hp89turuhkgsldjmvh59vhori4398j493tup984t5uhgopuyt9pq384gh9erhgp9q85utqp598tuqp598";
+        input = "11111111111000000000000";
         inputSaver = input;
+        size = 3;
 		do
 		{
         longSubString(input, input.length());
 		replace();
         System.out.println(input);
-        newSubstrings.clear();
+        tempNewSubstrings.clear();
+        uniqueSubstrings.clear();
+        repeatedSubstrings.clear();
+        subString = "";
+        subStringRemoved = "";
+        bigStringSaver = "";
+        smallStringSaver = "";
 		}while(!done);
 		System.out.println("You Saved: " + Integer.toString(inputSaver.length()-input.length()) + " Characters");
+		System.out.println(dictionary.toString());
 		
 	}
     private static void longSubString(String str, int n)
@@ -56,8 +64,9 @@ public class DictionaryCompressor
     		}
     	//tempNewSubstrings.add("");
     	shortSubString(bigStringSaver, n, bigStringSaver.length());
+    	System.out.println("new: " + tempNewSubstrings);
     	System.out.println("unique: " + uniqueSubstrings);
-    	System.out.println("repeated: "+repeatedSubstrings); //all the strings that repeat
+    	System.out.println("repeated: " + repeatedSubstrings); //all the strings that repeat
     	System.out.println(bigStringSaver); //longest repeated string
     }
     private static void shortSubString(String bigStringSaver, int n, int o)
@@ -67,11 +76,23 @@ public class DictionaryCompressor
     	for (int i = 0; true; i++)
     	{
     		add = Integer.toString(Integer.parseInt(Integer.toString(i), 10), base);
-    		if(add.length() < 3)
+    		if(add.length() < size)
     			tempNewSubstrings.add(add);
     		else
+    		{
     			break;
+    		}
     	}
+		int k = tempNewSubstrings.size();
+		for(int j = 0; j < k; j++)
+		{
+			add = "0" + tempNewSubstrings.get(j);
+			System.out.println(add);
+			if(add.length() < size)
+				tempNewSubstrings.add(add);
+			else
+				break;
+		}
     	System.out.println("tempnew 1 : "+tempNewSubstrings);
     	for( int j = 0; j < uniqueSubstrings.size(); j++)
     		for (int i = 0; i < tempNewSubstrings.size(); i++)
@@ -81,14 +102,24 @@ public class DictionaryCompressor
     				i = i-1;
     			}
 		System.out.println("tempnew 2 : "+tempNewSubstrings);
+		if(tempNewSubstrings.size()>0)
 			smallStringSaver = tempNewSubstrings.get(0);
+		else
+		{
+			System.out.println("No Efficient Solution");
+			done = true;
+		}
     }
     private static void replace()
     {
-    	System.out.println(bigStringSaver + smallStringSaver);
+    	System.out.println("Big: " + bigStringSaver + " Small: " + smallStringSaver);
+    	if(done == false)
     	if(bigStringSaver.length() > smallStringSaver.length())
+    	{
     		input = input.replaceAll(bigStringSaver, smallStringSaver); //Im worried that the replaceAll method may not be the best to use. Needs to be iterative
-    	else
+    		dictionary.add(smallStringSaver + "-" + bigStringSaver);
+    	}
+    		else
     	{
     		System.out.println("No Efficient Solution");
     		done = true;
